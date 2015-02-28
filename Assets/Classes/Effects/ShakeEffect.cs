@@ -50,7 +50,9 @@ namespace Assets.Classes.Effects
                     "amount", info.Amount,
 
                     "onstart", "OnITweenShakingStart",
-                    "oncomplete", "OnITweenShakingComplete"
+                    "oncomplete", "OnITweenShakingComplete",
+                    "onstarttarget", gameObject,
+                    "oncompletetarget", gameObject
                 ));
 
             ActualShakeInfo = info;

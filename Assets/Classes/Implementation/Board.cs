@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.Classes.Core;
+using Assets.Classes.Foundation.Enums;
 using Assets.Classes.Foundation.Extensions;
+using Rotorz.Tile;
 using UnityEngine;
 
 namespace Assets.Classes.Implementation
@@ -9,7 +11,7 @@ namespace Assets.Classes.Implementation
     public class Board : SingletonEntity<Board>
     {
 
-        public BoxCollider2D CellSizeCollider;
+        public TileSystem TileSystem;
 
         public Vector2 CellSize { get; private set; }
         public Vector3 LeftTop { get; private set; }
@@ -62,6 +64,13 @@ namespace Assets.Classes.Implementation
 
         public void PositionateCheckersByDefault()
         {
+
+            if (!isBoardIsDirty )
+            {
+                Debug.Log("Ignore PositionateCheckersByDefault");
+                return;
+            }
+
             foreach (var checker in Checkers)
             {
                 Destroy(checker.gameObject);
@@ -87,12 +96,19 @@ namespace Assets.Classes.Implementation
                 }
             }
 
+            isBoardIsDirty = false;
+
         }
 
+        private bool isBoardIsDirty;
+
         public List<Checker> Checkers { get; private set; }
-        public List<Highlighting> Highlightings { get; private set; } 
+        public List<Highlighting> Highlightings { get; private set; }
 
-
+        public VerticalDirection GetCheckersSideByColor(GameColor color)
+        {
+            return color == GameColor.White ? VerticalDirection.Bottom : VerticalDirection.Top;
+        }
 
         public Checker GetCheckerAt(int x, int y)
         {
@@ -101,9 +117,20 @@ namespace Assets.Classes.Implementation
 
         public Vector3 CalculateCellLeftTopPosition(int cellX, int cellY, float offsetX, float offsetY)
         {
-            return new Vector3(LeftTop.x + ((CellSize.x + offsetX) * (cellX) + CheckerOffset.x), LeftTop.y - ((CellSize.y + offsetY) * (cellY + 1)));
+
+
+            return TileSystem.WorldPositionFromTileIndex(cellY, cellX, false);
         }
- 
+
+        public Vector2 CalculateCellCenterPosition(int cellX, int cellY, float offsetX, float offsetY)
+        {
+            return TileSystem.WorldPositionFromTileIndex(cellY, cellX, true);
+        }
+
+        public Vector2 CalculateCellCenterPosition(int cellX, int cellY)
+        {
+            return CalculateCellCenterPosition(cellX, cellY, 0, 0);
+        }
 
         public Vector3 CalculateCellLeftTopPosition(int cellX, int cellY)
         {
@@ -112,45 +139,30 @@ namespace Assets.Classes.Implementation
 
         public Vector2? GetNearestCellPosition(Vector3 worldPosition)
         {
-            for (var x = 0; x < 8; x++)
-            {
-                for (var y = 0; y < 8; y++)
-                {
-                    var lt = Board.Instance.CalculateCellLeftTopPosition(x, y);
-
-                    if (worldPosition.x >= lt.x && worldPosition.x <= lt.x + Board.Instance.CellSize.x && worldPosition.y <= lt.y &&
-                        worldPosition.y >= lt.y - Board.Instance.CellSize.y)
-                    {
-                        return new Vector2(x, y);
-                    }
-
-                }
-            }
-            return null;
+            var ti = TileSystem.ClosestTileIndexFromWorld(worldPosition);
+            return new Vector2(ti.column, ti.row);
         }
 
         public void Move(CheckerMove move)
         {
+            isBoardIsDirty = true;
             var c = GetCheckerAt(move.OldX, move.OldY);
             if (c == null)
             {
                 Debug.Log("Checker to move not found!");
                 return;
             }
-            c.Move(move.NewX, move.NewY);
+            c.Move(move);
         }
-        public void Move(Checker target, int newX, int newY)
-        {
-            Move(new CheckerMove(target.X, target.Y, newX, newY));
-        }
-
+ 
         public void KillChecker(int x, int y)
         {
             KillChecker(GetCheckerAt(x, y));
         }
         public void KillChecker(Checker checker)
         {
-            
+            Checkers.Remove(checker);
+            checker.KillSelf();
         }
 
         public void HighlightCell(int x, int y, Color color)
@@ -200,9 +212,9 @@ namespace Assets.Classes.Implementation
 
         protected override void Awake()
         {
-            if (CellSizeCollider == null)
+            if (TileSystem == null)
             {
-                ProcessError("CellSizeCollider not initialized");
+                ProcessError("TileSystem not initialized");
                 return;
             }
 
@@ -217,12 +229,11 @@ namespace Assets.Classes.Implementation
 
             GameMessenger.AddListener<Highlighting>(Highlighting.HighlightingDisposedEventName, OnHighlightingDisposed);
 
-            var r = CellSizeCollider.GetWorldRect();
-
-            CellSize = new Vector2(r.width, r.height);
-            LeftTop = new Vector3(transform.position.x - spriteRenderer.bounds.size.x/2, transform.position.y + spriteRenderer.bounds.size.y/2, transform.position.z);
-
+            isBoardIsDirty = true;
             PositionateCheckersByDefault();
+
+            CellSize = new Vector2(TileSystem.CellSize.x, TileSystem.CellSize.y);
+            LeftTop = new Vector3(transform.position.x - spriteRenderer.bounds.size.x/2, transform.position.y + spriteRenderer.bounds.size.y/2, transform.position.z);
 
         }
 

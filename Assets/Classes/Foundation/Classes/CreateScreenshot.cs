@@ -7,6 +7,11 @@ namespace Assets.Classes.Foundation.Classes
     public class CreateScreenshot : MonoBehaviour
     {
 
+        private void Start()
+        {
+        
+        }
+
         public void Create()
         {
 
@@ -22,7 +27,7 @@ namespace Assets.Classes.Foundation.Classes
 
             yield return new WaitForEndOfFrame();
 
-            Application.CaptureScreenshot(@"C:\Users\Sasha\Documents\ProjectX\scr" + Guid.NewGuid().ToString("N") + ".png", Power);
+            Application.CaptureScreenshot(@"C:\Users\Sasha\Documents\ProjectZ\scr" + Guid.NewGuid().ToString("N") + ".png", 4);
 
             //// Create a texture the size of the screen, RGB24 format
             //var width = Screen.width;

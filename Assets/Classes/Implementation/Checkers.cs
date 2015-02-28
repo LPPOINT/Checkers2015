@@ -20,15 +20,15 @@ namespace Assets.Classes.Implementation
         }
         public override string Name
         {
-            get { return "RoseCheckers"; }
+            get { return "Checkers"; }
         }
         public override string AdvertsingProjectId
         {
-            get { return "131626185"; }
+            get { return ""; }
         }
         public override string UnityAnalyticsProjectId
         {
-            get { return "2ac294b3-3a67-49dc-9658-ade08db13324"; }
+            get { return ""; }
         }
         public override bool IsPromotionBannerSupported
         {
@@ -43,7 +43,7 @@ namespace Assets.Classes.Implementation
 
         protected override IEnumerable<IGameSystem> InitializeCustomGameSystems()
         {
-            yield return new Store();
+            return new List<IGameSystem>();
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using Assets.Classes.Core;
+﻿using System.Linq;
+using Assets.Classes.Core;
 using UnityEngine;
 
 namespace Assets.Classes.Implementation
@@ -13,15 +14,68 @@ namespace Assets.Classes.Implementation
 
         public PlayerBehaviour CurrentPlayer { get; private set; }
 
+        public bool IsGameInputLocked { get; private set; }
+
+        public void LockInput()
+        {
+            IsGameInputLocked = true;
+        }
+
+        public void UnlockInput()
+        {
+            IsGameInputLocked = false;
+        }
 
         public void ChangeMoveStatus(GameColor newPlayerColor)
         {
             
         }
 
+        private void ShowWinnerPopup(GameColor winerColor)
+        {
+            UIPopups.Instance.ShowToast(winerColor + " Wins!", 3);
+        }
+
         private void RegisterCheckerMoveComplete(Checker checker, CheckerMove move)
         {
-            ActivateOtherPlayer();
+            UnlockInput();
+            if (move.HasVictim)
+            {
+                Board.Instance.KillChecker(Board.Instance.GetCheckerAt(move.VictimX, move.VictimY));
+
+
+                var probe = Board.Instance.Checkers.FirstOrDefault().Color;
+                if (Board.Instance.Checkers.All(checker1 => checker1.Color == probe))
+                {
+                    Debug.Log("GameOver");
+                    
+                    ShowWinnerPopup(probe);
+
+                    NewGame();
+
+                    return;
+                }
+
+                var nextKillMoves = CheckerMoves.GetAllowedKillMovesForChecker(checker);
+                if (nextKillMoves.Any())
+                {
+                    ActivateOtherPlayer();
+                    //CurrentPlayer.OnInputWithheld();
+                }
+                else
+                {
+                    ActivateOtherPlayer();
+                }
+            }
+            else
+            {
+                ActivateOtherPlayer();
+            }
+        }
+
+        private void RegisterCheckerMoveStarted(Checker checker, CheckerMove move)
+        {
+            LockInput();
         }
         public void RegisterCurrentPlayerMove(CheckerMove move)
         {
@@ -48,11 +102,24 @@ namespace Assets.Classes.Implementation
             ActivatePlayer(CurrentPlayer.Color == GameColor.Black ? GameColor.White : GameColor.Black);
         }
 
+
+        public void NewGame()
+        {
+            ActivatePlayer(GameColor.White);
+            Board.Instance.PositionateCheckersByDefault();
+        }
+
         protected override void Awake()
         {
-            GameMessenger.AddListener<Checker, CheckerMove>(Checker.CheckerMoveComplateEventName, RegisterCheckerMoveComplete);
-            ActivatePlayer(GameColor.White);
+            GameMessenger.AddListener<Checker, CheckerMove>(Checker.CheckerMoveCompleteEventName, RegisterCheckerMoveComplete);
+            GameMessenger.AddListener<Checker, CheckerMove>(Checker.CheckerMoveStartedEventName, RegisterCheckerMoveStarted);
             base.Awake();
         }
+
+        private void Start()
+        {
+            NewGame();
+        }
+
     }
 }

@@ -20,33 +20,41 @@ namespace Assets.Classes.Implementation
         public State CurrentState { get; set; }
 
 
+        private static float ZMoveOffset = 0.1f;
+
         public override Vector3 Offset
         {
-            get { return  new Vector3(0.04f, 0.031f, 1);}
+            get { return  new Vector3(0.0f, 0.0f, 1);}
         }
 
-        public const string CheckerMoveComplateEventName = "CheckerMoveComplete";
-
+        public const string CheckerMoveCompleteEventName = "CheckerMoveComplete";
+        public const string CheckerMoveStartedEventName = "CheckerMoveStarted";
 
         private Tweener TweenMoveTo(Vector3 pos, float speed, Ease ease, Action onComplete)
         {
             return transform.DOMove(pos, speed)
                 .SetSpeedBased()
                 .SetEase(ease)
+                .OnStart(() =>
+                         {
+                             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - ZMoveOffset);
+                         })
                 .OnComplete(() =>
                             {
+                                transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + ZMoveOffset);
                                 if (onComplete != null) onComplete();
                             });
         }
 
-        public void Move(int newX, int newY)
+        public void Move(CheckerMove move)
         {
             var oldX = X;
             var oldY = Y;
-            X = newX;
-            Y = newY;
+            X = move.NewX;
+            Y = move.NewY;
             var pos = CalculateWorldPositionAt(X, Y);
-            TweenMoveTo(pos, 3, Ease.Linear, () => GameMessenger.Broadcast(CheckerMoveComplateEventName, this, new CheckerMove(oldX, oldY, newX, newY)));
+            TweenMoveTo(pos, 3, Ease.Linear, () => GameMessenger.Broadcast(CheckerMoveCompleteEventName, this, move));
+            GameMessenger.Broadcast(CheckerMoveStartedEventName, this, move);
 
         }
 
@@ -54,8 +62,19 @@ namespace Assets.Classes.Implementation
         {
             X = x;
             Y = y;
-            PositionateSprite();
+            var p = Board.Instance.CalculateCellCenterPosition(X, Y);
+            transform.position = new Vector3(p.x, p.y, Board.Instance.transform.position.z - Offset.z);
         }
 
+        protected override void Awake()
+        {
+            transform.rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0f, 360f));
+            base.Awake();
+        }
+
+        public void KillSelf()
+        {
+            Destroy(gameObject);
+        }
     }
 }

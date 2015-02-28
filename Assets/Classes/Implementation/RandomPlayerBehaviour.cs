@@ -9,7 +9,7 @@ namespace Assets.Classes.Implementation
     {
         public override void OnInputReceived()
         {
-            Invoke("Action", Random.Range(3f, 5f));
+            //Invoke("Action", Random.Range(3f, 5f));
             base.OnInputReceived();
         }
 
@@ -41,7 +41,7 @@ namespace Assets.Classes.Implementation
                 return;
             }
 
-            OnMoveExecuted(new CheckerMove(c.X, c.Y, (int)cell.Value.x, (int)cell.Value.y));
+            Move(new CheckerMove(c.X, c.Y, (int)cell.Value.x, (int)cell.Value.y));
 
         }
 

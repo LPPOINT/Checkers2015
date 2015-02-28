@@ -7,16 +7,27 @@ namespace Assets.Classes.Implementation
 
         public GameColor Color;
 
-        public bool IsCurrentPlayer { get; private set; }
+        public bool IsCurrentPlayer
+        {
+            get { return Round.Instance.CurrentPlayer == this; }
+        }
 
         public virtual void OnInputReceived()
         {
-            IsCurrentPlayer = true;
         }
 
-        protected void OnMoveExecuted(CheckerMove move)
+        public virtual void OnInputWithheld()
         {
-            IsCurrentPlayer = false;
+            
+        }
+
+        public virtual void OnInputLost()
+        {
+            
+        }
+
+        protected void Move(CheckerMove move)
+        {
             Round.Instance.RegisterCurrentPlayerMove(move);
         }
     }

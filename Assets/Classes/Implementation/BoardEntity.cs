@@ -21,8 +21,8 @@ namespace Assets.Classes.Implementation
 
         public Vector3 CalculateWorldPositionAt(int x, int y)
         {
-            var lt = Board.Instance.CalculateCellLeftTopPosition(x, y, Offset.x, Offset.y);
-            return new Vector3(lt.x + Size.x / 2, lt.y + Size.y / 2, Board.Instance.transform.position.z - Offset.z);
+            var p = Board.Instance.CalculateCellCenterPosition(x, y);
+            return new Vector3(p.x, p.y, Board.Instance.transform.position.z - Offset.z);
         }
         public Vector3 CalculateWorldPosition()
         {
