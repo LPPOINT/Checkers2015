@@ -1,0 +1,92 @@
+fileFormatVersion: 2
+guid: ee1a9d1ffbe0a1d4093f862a4386708f
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: ground
+    21300002: circle_arrow
+    21300004: rocket1_body
+    21300006: fire1
+    21300008: horizontal_gate_1
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: ground
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 2317
+        width: 1629
+        height: 1615
+      alignment: 9
+      pivot: {x: .5, y: .699999988}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: rocket1_body
+      rect:
+        serializedVersion: 2
+        x: 1996
+        y: 2845
+        width: 715
+        height: 964
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: fire1
+      rect:
+        serializedVersion: 2
+        x: 2198
+        y: 2485
+        width: 303
+        height: 301
+      alignment: 2
+      pivot: {x: .5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: horizontal_gate_1
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 1775
+        width: 2395
+        height: 274
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
